@@ -1,0 +1,45 @@
+[package]
+name = "paso-08-schedule"
+version = "0.1.0"
+edition = "2021"
+resolver = "2"
+rust-version = "1.77"
+
+[[bin]]
+name = "paso-08-schedule"
+harness = false
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+
+[profile.dev]
+debug = true
+opt-level = "z"
+
+[dependencies]
+# Paso-07 NO agrega deps nuevas. Los bindings POSIX (time_t, tm, localtime_r,
+# setenv, tzset) viven en esp_idf_svc::sys (expuestos via FFI del SDK de C).
+log = "0.4"
+esp-idf-hal = { version = "0.45", features = ["rmt-legacy"] }
+esp-idf-svc = { version = "0.51", features = ["critical-section"] }
+embedded-svc = "0.28"
+heapless = "0.8"
+anyhow = "1.0"
+zeroize = { version = "1.8", features = ["derive"] }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+
+
+# ─── Deps del LED (compartidas desde paso-03) ───
+
+# Driver del WS2812 (LED RGB direccionable tipo NeoPixel) para ESP32.
+# Usa RMT por debajo para generar los pulsos de timing preciso.
+ws2812-esp32-rmt-driver = { version = "0.13", features = ["smart-leds-trait"] }
+
+# Trait abstracto para drivers de LEDs inteligentes (RGB8, SmartLedsWrite).
+smart-leds-trait = "0.3"
+
+[build-dependencies]
+embuild = "0.33"
